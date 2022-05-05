@@ -1,12 +1,8 @@
-use db::student::StudentInfo;
+use sdciith_blogging::db::{student::StudentInfo, content::{all_titles, specific_content}};
 use diesel::{Connection, SqliteConnection};
 
-use crate::db::student::{verify_student, add_student};
+use sdciith_blogging::db::student::{verify_student, add_student};
 
-#[macro_use]
-extern crate diesel;
-
-pub mod db;
 
 fn main() {
     dotenv::dotenv().ok();
@@ -22,4 +18,10 @@ fn main() {
         },
     );
     println!("{:?}", student);
+
+    let data = all_titles(&db_pool);
+    println!("{:?}", data);
+
+    let data = specific_content(&db_pool, "bharad", "title4");
+    println!("{:?}", data);
 }

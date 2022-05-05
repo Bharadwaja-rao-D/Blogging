@@ -12,9 +12,8 @@ table! {
         title -> Text,
         description -> Text,
         body -> Text,
-        creater_id -> Nullable<Integer>,
-        upvotes -> Nullable<Integer>,
-        down -> Nullable<Integer>,
+        creator_id -> Integer,
+        upvotes -> Integer,
     }
 }
 
@@ -28,7 +27,7 @@ table! {
 
 joinable!(commenting -> content (content_id));
 joinable!(commenting -> student (commentor_id));
-joinable!(content -> student (creater_id));
+joinable!(content -> student (creator_id));
 
 allow_tables_to_appear_in_same_query!(
     commenting,

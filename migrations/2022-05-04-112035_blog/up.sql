@@ -11,10 +11,9 @@ create table content(
 	title TEXT NOT NULL,
 	description TEXT NOT NULL,
 	body TEXT NOT NULL,
-	creater_id INTEGER,
-	upvotes	INTEGER default 0,
-	down INTEGER default 0,
-	FOREIGN KEY(creater_id) REFERENCES student(id) ON DELETE CASCADE
+	creator_id INTEGER NOT NULL,
+	upvotes	INTEGER default 0 NOT NULL,
+	FOREIGN KEY(creator_id) REFERENCES student(id) ON DELETE CASCADE
 );
 
 create table commenting(
