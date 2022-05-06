@@ -1,27 +1,39 @@
-use sdciith_blogging::db::{student::StudentInfo, content::{all_titles, specific_content}};
-use diesel::{Connection, SqliteConnection};
+#[macro_use]
+extern crate diesel;
 
-use sdciith_blogging::db::student::{verify_student, add_student};
+pub mod api;
+pub mod db;
 
+use crate::api::index;
+use actix_cors;
+use actix_web::{middleware::Logger, web, App, HttpServer};
+use diesel::{r2d2::ConnectionManager, SqliteConnection};
 
-fn main() {
+pub type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
+    std::env::set_var("RUST_LOG", "actix_web=info");
+    env_logger::init();
     let db_url = std::env::var("DATABASE_URL").expect("database not found");
-    let db_pool = SqliteConnection::establish(&db_url).expect("Failed connecting database");
-    let student = add_student(&db_pool, &StudentInfo {name: "bharad", password: "dbr"});
-    println!("Added {:?}", student);
-    let student = verify_student(
-        &db_pool,
-        &StudentInfo {
-            name: "bharad",
-            password: "dbr",
-        },
-    );
-    println!("{:?}", student);
+    let db_pool = Pool::builder()
+        .build(ConnectionManager::new(db_url))
+        .expect("Error creating a pool");
 
-    let data = all_titles(&db_pool);
-    println!("{:?}", data);
+    let _ = HttpServer::new(move || {
+        let cors = actix_cors::Cors::permissive();
+        App::new()
+            .wrap(Logger::default())
+            .wrap(cors)
+            .app_data(web::Data::new(db_pool.clone()))
+            .service(
+                web::resource("/api/")
+                .route( web::get().to(index)))
+    })
+    .bind("127.0.0.1:8080")?
+    .run()
+    .await;
 
-    let data = specific_content(&db_pool, "bharad", "title4");
-    println!("{:?}", data);
+    return Ok(());
 }

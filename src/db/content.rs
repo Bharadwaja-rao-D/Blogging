@@ -64,5 +64,12 @@ pub fn specific_content(db_pool: &SqliteConnection, creator_name: &str, title: &
         .get_results::<Content>(db_pool).unwrap();
 }
 
+/*
 pub fn add_content(db_pool: &SqliteConnection, new_content: ContentNew) -> Content {
 }
+
+//to show changes we return Content
+pub fn up_vote(db_pool: &SqliteConnection, blog_id: i32) -> Content{
+}
+*/
+
