@@ -3,6 +3,7 @@ table! {
         id -> Integer,
         commentor_id -> Integer,
         content_id -> Integer,
+        comment_text -> Text,
     }
 }
 

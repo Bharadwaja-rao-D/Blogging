@@ -1,5 +1,4 @@
 use super::schema::student;
-use super::schema::student::dsl::*;
 use diesel::prelude::*;
 use diesel::sqlite::SqliteConnection;
 use diesel::{QueryDsl, RunQueryDsl};
@@ -41,14 +40,14 @@ impl StudentInterface {
     }
 }
 
-//TODO: Try to use generics so that it would be easy for remaining modules
 pub fn add_student(db_pool: &SqliteConnection, new_student: &StudentInfo) -> StudentInterface {
     match search_student(db_pool, new_student.name) {
         Some(_) => {
             return StudentInterface::new(-1, new_student.name, "User exists");
         }
         None => {
-            let value = diesel::insert_into(student)
+            //TODO: There is no returning for sqlite sad :( 
+            let value = diesel::insert_into(student::table)
                 .values(new_student)
                 .execute(db_pool)
                 .expect("error inserting");
@@ -74,7 +73,7 @@ pub fn verify_student(db_pool: &SqliteConnection, student_info: &StudentInfo) ->
 
 fn search_student(db_pool: &SqliteConnection, search_user: &str) -> Option<Student> {
     //here we are sure that only one user exists
-    match student.filter(name.eq(search_user)).first(db_pool) {
+    match student::table.filter(student::name.eq(search_user)).first(db_pool) {
         Ok(found_user) => return Some(found_user),
         Err(_) => return None,
     }

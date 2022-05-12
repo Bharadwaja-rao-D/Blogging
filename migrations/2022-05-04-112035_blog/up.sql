@@ -20,6 +20,7 @@ create table commenting(
 	id INTEGER PRIMARY KEY NOT NULL,
 	commentor_id INTEGER NOT NULL,
 	content_id INTEGER NOT NULL,
+	comment_text varchar NOT NULL,
 	FOREIGN KEY(commentor_id) REFERENCES student(id) ON DELETE CASCADE
 	FOREIGN KEY(content_id) REFERENCES content(id) ON DELETE CASCADE
 );
