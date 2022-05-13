@@ -1,3 +1,7 @@
+//TODO: 1. session stuff
+//2. Upvoting stuff
+//3. Comments part
+
 #[macro_use]
 extern crate diesel;
 
@@ -5,14 +9,23 @@ pub mod api;
 pub mod db;
 
 use actix_cors;
-use actix_session::{ SessionMiddleware, storage::RedisActorSessionStore};
-use actix_web::{middleware::Logger, web, App, HttpServer, cookie::Key};
+use actix_session::{storage::RedisActorSessionStore, SessionMiddleware};
+use actix_web::{cookie::Key, middleware::Logger, web, App, HttpServer, guard};
+use db::student::StudentInfo;
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
 
 pub type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+
+    //just print it
+
+    let info = StudentInfo{ name: "abc".to_string(), password: "pass".to_string() };
+
+    println!("Json: {:?}", serde_json::to_string(&info));
+
+
     dotenv::dotenv().ok();
     std::env::set_var("RUST_LOG", "actix_web=info");
     env_logger::init();
@@ -29,28 +42,32 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(Logger::default())
             .wrap(cors)
-            .wrap(
-                SessionMiddleware::new(
-                    RedisActorSessionStore::new(redis_conn_string),
-                    secret_key.clone()
-                )
-                )
+            .wrap(SessionMiddleware::new(
+                RedisActorSessionStore::new(redis_conn_string),
+                secret_key.clone(),
+            ))
             .app_data(web::Data::new(db_pool.clone()))
             .service(
                 //returns all the titles, description and author
                 //no login required for this
-                web::resource("/api/")
-                .route( web::get().to(api::index)))
+                web::resource("/").route(web::get().to(api::index)),
+            )
             .service(
-                //returns the title, content of a specific blog
+                //returns the title, content and comments of a specific blog
                 //no login required for this
-                web::resource("/api/{author}/{title}")
-                .route( web::post().to(api::complete_blog)))
+                web::resource("/blog/{author}/{title}").route(web::get().to(api::complete_blog)),
+            )
             .service(
-                //TODO: This should have logging 
+                //used to add a new blog
+                web::resource("/blog/new").route(web::post().to(api::add_blog)),
+            )
+            .service(
+                //TODO: This should have logging
                 //upvoting a blog, adding a new blog requires session thing
-                web::resource("/api/{new_student}")
-                .route( web::post().to(api::add_student)))
+                web::resource("/student/new/")
+                .guard(guard::Header("content-type", "application/json"))
+                .route(web::post().to(api::add_student)),
+            )
     })
     .bind("127.0.0.1:8080")?
     .run()

@@ -16,9 +16,9 @@ struct Student {
 
 #[derive(Debug, Serialize, Deserialize, Insertable)]
 #[table_name = "student"]
-pub struct StudentInfo<'a> {
-    pub name: &'a str,
-    pub password: &'a str,
+pub struct StudentInfo {
+    pub name: String,
+    pub password: String
 }
 
 ///This struct acts as an intermidate
@@ -41,9 +41,9 @@ impl StudentInterface {
 }
 
 pub fn add_student(db_pool: &SqliteConnection, new_student: &StudentInfo) -> StudentInterface {
-    match search_student(db_pool, new_student.name) {
+    match search_student(db_pool, &new_student.name) {
         Some(_) => {
-            return StudentInterface::new(-1, new_student.name, "User exists");
+            return StudentInterface::new(-1, &new_student.name, "User exists");
         }
         None => {
             //TODO: There is no returning for sqlite sad :( 
@@ -51,22 +51,22 @@ pub fn add_student(db_pool: &SqliteConnection, new_student: &StudentInfo) -> Stu
                 .values(new_student)
                 .execute(db_pool)
                 .expect("error inserting");
-            return StudentInterface::new(value as i32, new_student.name, "Successful");
+            return StudentInterface::new(value as i32, &new_student.name, "Successful");
         }
     }
 }
 
 pub fn verify_student(db_pool: &SqliteConnection, student_info: &StudentInfo) -> StudentInterface {
-    match search_student(db_pool, student_info.name) {
+    match search_student(db_pool, &student_info.name) {
         Some(exist) => {
             if exist.password == student_info.password {
                 return StudentInterface::new(exist.id, &exist.name, "Successful");
             } else {
-                return StudentInterface::new(-1, student_info.name, "Incorrect password");
+                return StudentInterface::new(-1, &student_info.name, "Incorrect password");
             }
         }
         None => {
-            return StudentInterface::new(-1, student_info.name, "User not found");
+            return StudentInterface::new(-1, &student_info.name, "User not found");
         }
     }
 }
