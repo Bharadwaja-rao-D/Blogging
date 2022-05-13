@@ -16,6 +16,12 @@ struct Student {
 
 #[derive(Debug, Serialize, Deserialize, Insertable)]
 #[table_name = "student"]
+pub struct NewStudent <'a>{
+    pub name: &'a str,
+    pub password: &'a str
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct StudentInfo {
     pub name: String,
     pub password: String
@@ -47,8 +53,10 @@ pub fn add_student(db_pool: &SqliteConnection, new_student: &StudentInfo) -> Stu
         }
         None => {
             //TODO: There is no returning for sqlite sad :( 
+            
+            let new_student =  NewStudent{name: &new_student.name, password: &new_student.password};
             let value = diesel::insert_into(student::table)
-                .values(new_student)
+                .values(&new_student)
                 .execute(db_pool)
                 .expect("error inserting");
             return StudentInterface::new(value as i32, &new_student.name, "Successful");

@@ -11,7 +11,6 @@ pub mod db;
 use actix_cors;
 use actix_session::{storage::RedisActorSessionStore, SessionMiddleware};
 use actix_web::{cookie::Key, middleware::Logger, web, App, HttpServer, guard};
-use db::student::StudentInfo;
 use diesel::{r2d2::ConnectionManager, SqliteConnection};
 
 pub type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
@@ -19,11 +18,6 @@ pub type Pool = r2d2::Pool<ConnectionManager<SqliteConnection>>;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
-    //just print it
-
-    let info = StudentInfo{ name: "abc".to_string(), password: "pass".to_string() };
-
-    println!("Json: {:?}", serde_json::to_string(&info));
 
 
     dotenv::dotenv().ok();
@@ -36,6 +30,7 @@ async fn main() -> std::io::Result<()> {
 
     let secret_key = Key::generate();
     let redis_conn_string = "127.0.0.1:6379";
+
 
     let _ = HttpServer::new(move || {
         let cors = actix_cors::Cors::permissive();
@@ -50,21 +45,23 @@ async fn main() -> std::io::Result<()> {
             .service(
                 //returns all the titles, description and author
                 //no login required for this
-                web::resource("/").route(web::get().to(api::index)),
+                web::resource("/blog")
+                .route(web::get().to(api::index))
+                .guard(guard::Header("content-type", "application/json"))
+                .route(web::post().to(api::add_blog))
             )
             .service(
                 //returns the title, content and comments of a specific blog
                 //no login required for this
-                web::resource("/blog/{author}/{title}").route(web::get().to(api::complete_blog)),
-            )
-            .service(
-                //used to add a new blog
-                web::resource("/blog/new").route(web::post().to(api::add_blog)),
+                web::resource("/blog/{author}/{title}")
+                .route(web::get().to(api::complete_blog))
+                .guard(guard::Header("content-type", "application/json"))
+                .route(web::post().to(api::add_comment)),
             )
             .service(
                 //TODO: This should have logging
                 //upvoting a blog, adding a new blog requires session thing
-                web::resource("/student/new/")
+                web::resource("/student/new")
                 .guard(guard::Header("content-type", "application/json"))
                 .route(web::post().to(api::add_student)),
             )
@@ -72,6 +69,7 @@ async fn main() -> std::io::Result<()> {
     .bind("127.0.0.1:8080")?
     .run()
     .await;
+    println!("Here");
 
     return Ok(());
 }

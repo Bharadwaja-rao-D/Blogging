@@ -55,6 +55,20 @@ pub struct WholeContentInfo {
     comments: Vec<Comment>,
 }
 
+pub fn get_content_id(db_pool: &SqliteConnection, creator_name: &str, title: &str) -> i32 {
+    let content: i32 = content::table
+        .inner_join(student::table)
+        .select(
+            content::id,
+        )
+        .filter(student::name.eq(creator_name).and(content::title.eq(title)))
+        .first(db_pool)
+        .unwrap();
+
+    return content;
+
+}
+
 //TODO: Here we need to show all the comments also
 pub fn specific_content(
     db_pool: &SqliteConnection,

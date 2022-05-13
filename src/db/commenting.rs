@@ -18,8 +18,10 @@ pub struct Comment {
 pub struct NewComment {
     pub commentor_id: i32,
     pub content_id: i32,
+    pub comment_text: String,
 }
 
+//after adding comming it will return the vec of all the comments for that content
 pub fn add_comment(db_pool: &SqliteConnection, new_comment: NewComment) -> Vec<Comment> {
     diesel::insert_into(commenting::table)
         .values(&new_comment)
