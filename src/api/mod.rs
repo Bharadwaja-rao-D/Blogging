@@ -1,4 +1,5 @@
 //contains handlers
+//TODO: Need to add web::block for all handlers
 
 use actix_web::{HttpResponse, web};
 use serde::{Deserialize, Serialize};
@@ -22,6 +23,13 @@ pub async fn add_student(db_pool: web::Data<Pool>, new_student: web::Json<Studen
     let db_pool = db_pool.get().unwrap();
     let new_student = new_student.into_inner();
     let info = student::add_student(&db_pool,&new_student);
+    return Ok(HttpResponse::Ok().json(info));
+}
+
+pub async fn verify_student(db_pool: web::Data<Pool>, student: web::Json<StudentInfo>) -> std::io::Result<HttpResponse>{
+    let db_pool = db_pool.get().unwrap();
+    let student = student.into_inner();
+    let info = student::verify_student(&db_pool,&student);
     return Ok(HttpResponse::Ok().json(info));
 }
 

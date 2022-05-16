@@ -11,6 +11,7 @@ pub struct Comment {
     content_id: i32,
     commentor_name: String,
     comment: String,
+    comment_id: i32
 }
 
 #[derive(Deserialize, Serialize, Insertable)]
@@ -37,6 +38,7 @@ pub fn display_content_comments(db_pool: &SqliteConnection, content_id: i32)-> V
             content::id,
             student::name,
             commenting::comment_text,
+            commenting::id,
     ))
         .filter(content::id.eq(content_id))
         .get_results::<Comment>(db_pool).unwrap()

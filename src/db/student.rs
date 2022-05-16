@@ -34,14 +34,16 @@ pub struct StudentInterface {
     pub name: String,
     ///this will be used to know the actual error
     pub incorrect_reason: String,
+    pub token: String,
 }
 
 impl StudentInterface {
-    fn new(id_: i32, name_: &str, msg: &str) -> StudentInterface {
+    fn new(id_: i32, name_: &str, msg: &str, token: &str) -> StudentInterface {
         return StudentInterface {
             id: id_,
             name: name_.to_string(),
             incorrect_reason: msg.to_string(),
+            token: token.to_string()
         };
     }
 }
@@ -49,7 +51,7 @@ impl StudentInterface {
 pub fn add_student(db_pool: &SqliteConnection, new_student: &StudentInfo) -> StudentInterface {
     match search_student(db_pool, &new_student.name) {
         Some(_) => {
-            return StudentInterface::new(-1, &new_student.name, "User exists");
+            return StudentInterface::new(-1, &new_student.name, "User exists", "null");
         }
         None => {
             //TODO: There is no returning for sqlite sad :( 
@@ -59,7 +61,8 @@ pub fn add_student(db_pool: &SqliteConnection, new_student: &StudentInfo) -> Stu
                 .values(&new_student)
                 .execute(db_pool)
                 .expect("error inserting");
-            return StudentInterface::new(value as i32, &new_student.name, "Successful");
+                //TODO: Here instead of null you need to generate a token and use it
+            return StudentInterface::new(value as i32, &new_student.name, "Successful", "null");
         }
     }
 }
@@ -68,13 +71,14 @@ pub fn verify_student(db_pool: &SqliteConnection, student_info: &StudentInfo) ->
     match search_student(db_pool, &student_info.name) {
         Some(exist) => {
             if exist.password == student_info.password {
-                return StudentInterface::new(exist.id, &exist.name, "Successful");
+                //TODO: Here instead of null you need to generate a token and use it
+                return StudentInterface::new(exist.id, &exist.name, "Successful", "null");
             } else {
-                return StudentInterface::new(-1, &student_info.name, "Incorrect password");
+                return StudentInterface::new(-1, &student_info.name, "Incorrect password", "null");
             }
         }
         None => {
-            return StudentInterface::new(-1, &student_info.name, "User not found");
+            return StudentInterface::new(-1, &student_info.name, "User not found", "null");
         }
     }
 }
