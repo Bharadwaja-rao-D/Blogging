@@ -8,4 +8,5 @@ Just mimicing the blogging site
 
 ## To run
 
-cargo run 
+1. diesel migration run: to create the database and the tables
+2. cargo run: to run the webserver

@@ -12,11 +12,22 @@ use crate::db::content::{self, add_content, get_content_id, specific_content, Co
 use crate::db::student::{self, StudentInfo, StudentInterface};
 use crate::Pool;
 
+
 //at home page we need to display all the titles and descriptions
 //this doesnot require logging in
 //logging in is required only if a student wants to write a blog or upvote a blog
 pub async fn index(db_pool: web::Data<Pool>) -> std::io::Result<HttpResponse> {
+    let new_student = StudentInfo {
+        name: "anonymous".to_string(),
+        password: " ".to_string(),
+    };
+
+    let first_run = std::env::var("FIRST_RUN").expect("database not found");
     let db_pool = db_pool.get().unwrap();
+    if first_run.parse::<i32>().unwrap() == 1 {
+
+        crate::db::student::add_student(&db_pool, &new_student);
+    }
     let all_contents = content::all_titles(&db_pool);
     return Ok(HttpResponse::Ok().json(all_contents));
 }
@@ -67,7 +78,7 @@ impl StudentToken {
 
 pub async fn verify_authentication(auth: BearerAuth) {
     let token = auth.token();
-    let decoded = decode::<Claims>(
+    let _decoded = decode::<Claims>(
         &token,
         &DecodingKey::from_secret(b"thisisthesecret"),
         &Validation::new(jsonwebtoken::Algorithm::HS512),

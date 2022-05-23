@@ -1,5 +1,5 @@
-//TODO: 1. session stuff
-//2. Upvoting stuff
+//TODO: setCookie part
+//set authorization header and check authentication whenever required
 
 #[macro_use]
 extern crate diesel;
@@ -28,6 +28,9 @@ async fn main() -> std::io::Result<()> {
     let port = std::env::var("PORT").expect("database not found");
 
     let _frontend = "http://localhost:3000/";
+
+
+    //adding an anyonymous user at begining
 
     let _ = HttpServer::new(move || {
         let cors = actix_cors::Cors::permissive();

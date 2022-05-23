@@ -24,6 +24,7 @@ pub struct NewComment {
 
 //after adding comming it will return the vec of all the comments for that content
 pub fn add_comment(db_pool: &SqliteConnection, new_comment: NewComment) -> Vec<Comment> {
+    //TODO: Need to check whether the user is authorized or not
     diesel::insert_into(commenting::table)
         .values(&new_comment)
         .execute(db_pool)

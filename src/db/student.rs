@@ -58,11 +58,17 @@ pub fn add_student(db_pool: &SqliteConnection, new_student: &StudentInfo) -> Stu
                 name: &new_student.name,
                 password: &new_student.password,
             };
-            let value = diesel::insert_into(student::table)
+            let _ = diesel::insert_into(student::table)
                 .values(&new_student)
                 .execute(db_pool)
                 .expect("error inserting");
-            return StudentInterface::new(value as i32, &new_student.name, "Successful");
+
+                let student_info = StudentInfo{
+                    name: new_student.name.to_string(),
+                    password: new_student.password.to_string() 
+                };
+
+                return verify_student(db_pool, &student_info);
         }
     }
 }
