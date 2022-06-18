@@ -1,0 +1,165 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family:  Menlo, Monaco, Consolas, 'Courier New',source-code-pro,
+    monospace;
+}
+
+*{
+    margin: 0;
+}
+
+.navbar{
+    display: flex;
+    margin: 0 auto;
+    padding: 20px;
+    align-items: center;
+	background: darkgrey;
+}
+
+.navbar h1{
+    margin-right: 25px;
+    color: black;
+}
+
+.links{
+    margin-left: auto;
+}
+
+.links a{
+    margin: 10px;
+    padding: 1em;
+    text-decoration: none;
+	color: white;
+	position: relative;
+
+	z-index: 1;
+}
+
+.links a::after{
+	content: '';
+	padding: 1px;
+	background: black;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+
+	z-index: -1;
+
+	transform: scaleX(0);
+	transition: transform 250ms;
+	transform-origin: right;
+}
+
+.links a:hover::after{
+	transform: scaleX(1);
+	transform-origin: left;
+}
+
+.content{
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.content-jist{
+    margin: 40px;
+    padding: 10px;
+}
+
+.content-jist h2{
+    color: #f1356d;
+    margin-bottom: 16px;
+}
+
+.content-jist p{
+    margin: 8px;
+}
+
+
+.content-jist:hover{
+  box-shadow: 1px 3px 5px rgba(0,0,0,0.1);
+}
+
+.complete-blog{
+    margin: 28px;
+    padding: 20px;
+}
+
+.complete-blog h2 {
+  font-size: 20px;
+  color: #f1356d;
+  margin-bottom: 10px;
+}
+
+.all-comments{
+    margin-top: 30px;
+}
+
+.add-blog{
+	max-width: 400px;
+	text-align: center;
+	margin: 0 auto;
+}
+
+.add-blog label{
+	display: block;
+	text-align: left;
+	margin-top: 50px;
+}
+
+.add-blog input, .add-blog textarea{
+	width: 100%;
+	padding: 6px 10px;
+	margin: 10px 0;
+	border: 1px solid #ddd;
+	display: block;
+	box-sizing: border-box;
+}
+
+.add-blog button {
+  background: #f1356d;
+  color: #fff;
+  border: 0;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.add-comment{
+	text-align: left;
+	margin: 30px auto;
+}
+
+.add-comment label{
+	display: block;
+	text-align: left;
+}
+
+.add-comment textarea{
+	width: 100%;
+	margin: 20px 0;
+}
+
+.specific-comment p{
+	margin: 10px 0;
+	padding: 10px 5px;
+	border: 1px solid #ddd;
+}
+
+.signin-form  *{
+	display: block;
+	margin-top: 20px;
+}
+
+.signin-form h1{
+	margin-bottom: 20px;
+}
