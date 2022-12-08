@@ -1,4 +1,6 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
     commenting (id) {
         id -> Integer,
         commentor_id -> Integer,
@@ -7,7 +9,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     content (id) {
         id -> Integer,
         title -> Text,
@@ -18,7 +20,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     student (id) {
         id -> Integer,
         name -> Text,
@@ -26,11 +28,11 @@ table! {
     }
 }
 
-joinable!(commenting -> content (content_id));
-joinable!(commenting -> student (commentor_id));
-joinable!(content -> student (creator_id));
+diesel::joinable!(commenting -> content (content_id));
+diesel::joinable!(commenting -> student (commentor_id));
+diesel::joinable!(content -> student (creator_id));
 
-allow_tables_to_appear_in_same_query!(
+diesel::allow_tables_to_appear_in_same_query!(
     commenting,
     content,
     student,

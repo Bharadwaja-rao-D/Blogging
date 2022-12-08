@@ -58,15 +58,12 @@ pub struct WholeContentInfo {
 pub fn get_content_id(db_pool: &SqliteConnection, creator_name: &str, title: &str) -> i32 {
     let content: i32 = content::table
         .inner_join(student::table)
-        .select(
-            content::id,
-        )
+        .select(content::id)
         .filter(student::name.eq(creator_name).and(content::title.eq(title)))
         .first(db_pool)
         .unwrap();
 
     return content;
-
 }
 
 //TODO: Here we need to show all the comments also
@@ -104,7 +101,8 @@ pub fn add_content(db_pool: &SqliteConnection, new_content: ContentNew) -> Whole
     let creator_name: String = student::table
         .filter(student::id.eq(&new_content.creator_id))
         .select(student::name)
-        .first(db_pool).expect("Not found");
+        .first(db_pool)
+        .expect("Not found");
 
     let _info = diesel::insert_into(content::table)
         .values(&new_content)
